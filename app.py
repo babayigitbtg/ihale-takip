@@ -7,8 +7,8 @@ r = requests.get(url, timeout=30)
 
 soup = BeautifulSoup(r.text, "html.parser")
 
-for h in soup.find_all(["h1", "h2", "h3", "h4", "h5", "a"]):
-    text = h.get_text(" ", strip=True)
+text = soup.get_text("\n", strip=True)
 
-    if len(text) > 20:
-        print(text)
+for line in text.split("\n"):
+    if len(line) > 30:
+        print(line)
