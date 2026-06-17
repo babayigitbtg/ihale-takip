@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-url = "https://www.konya.gov.tr/ihale-ilanlari"
+url = "https://www.kos.org.tr/directorate/auctions"
 
 r = requests.get(url, timeout=30)
 soup = BeautifulSoup(r.text, "html.parser")
