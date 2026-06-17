@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-url = "https://www.konya.bel.tr/ihale"
+url = "https://www.konya.gov.tr/ihale-ilanlari"
 
 r = requests.get(url, timeout=30)
 
