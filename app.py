@@ -1,6 +1,6 @@
 import requests
 
-url = "url = "https://www.konya.bel.tr/ihale"
+url = "https://www.konya.bel.tr/ihale"
 
 r = requests.get(url, timeout=30)
 
