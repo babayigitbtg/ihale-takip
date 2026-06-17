@@ -4,12 +4,15 @@ from bs4 import BeautifulSoup
 url = "https://www.konya.bel.tr/ihale"
 
 r = requests.get(url, timeout=30)
-
 soup = BeautifulSoup(r.text, "html.parser")
 
-for tag in soup.find_all(["div", "article", "li"]):
-    text = tag.get_text(" ", strip=True)
+cards = soup.find_all(["div", "article", "section"])
+
+for i, card in enumerate(cards[:100]):
+    text = card.get_text(" ", strip=True)
 
     if "İhale Konusu" in text:
-        print("=" * 80)
-        print(text[:1000])
+        print("\n" + "="*50)
+        print("TAG:", card.name)
+        print("CLASS:", card.get("class"))
+        print(text[:500])
