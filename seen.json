@@ -1,3 +1,8 @@
 {
-  "sites": {}
+  "sites": {
+    "Konya Büyükşehir Belediyesi": "4e8553a31a66423f44327b0c467d3a67",
+    "Konya Valiliği": "b7ee9d94d78664198098d90be36acebe",
+    "KOS": "7ad91b6332669dc572173e4c003030e7",
+    "ilan.gov.tr": "968cf4c9443eef8020f424983f5e5452"
+  }
 }
