@@ -21,25 +21,45 @@ def telegram(msg):
 def konya_belediye():
     url = "https://www.konya.bel.tr/ihale"
 
-    r = requests.get(url, timeout=30)
+    r = requests.get(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0"
+        },
+        timeout=30
+    )
+
     soup = BeautifulSoup(r.text, "html.parser")
 
-    text = soup.get_text("\n", strip=True)
+    text = soup.get_text(" ", strip=True)
 
     ilanlar = []
 
-    for line in text.split("\n"):
-        if "İhale Konusu " in line and " İhale Sahibi " in line:
-            baslik = line.split("İhale Konusu ")[1].split(" İhale Sahibi")[0].strip()
-            ilanlar.append(baslik)
+    parts = text.split("İhale Konusu")
 
-    return ilanlar
+    for part in parts[1:]:
+
+        if "İhale Sahibi" in part:
+
+            baslik = part.split("İhale Sahibi")[0].strip()
+
+            if len(baslik) > 10:
+                ilanlar.append(baslik)
+
+    return list(set(ilanlar))
 
 
 def konya_valilik():
     url = "https://www.konya.gov.tr/ihale-ilanlari"
 
-    r = requests.get(url, timeout=30)
+    r = requests.get(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0"
+        },
+        timeout=30
+    )
+
     soup = BeautifulSoup(r.text, "html.parser")
 
     ilanlar = []
@@ -51,7 +71,12 @@ def konya_valilik():
         if len(line) < 10:
             continue
 
-        if "İşi" in line or "Alımı" in line:
+        if (
+            "İşi" in line
+            or "Alımı" in line
+            or "İhalesi" in line
+            or "İhale" in line
+        ):
             ilanlar.append(line)
 
     return list(set(ilanlar))
@@ -60,7 +85,14 @@ def konya_valilik():
 def kos():
     url = "https://www.kos.org.tr/directorate/auctions"
 
-    r = requests.get(url, timeout=30)
+    r = requests.get(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0"
+        },
+        timeout=30
+    )
+
     soup = BeautifulSoup(r.text, "html.parser")
 
     ilanlar = []
@@ -72,21 +104,25 @@ def kos():
         if len(line) < 10:
             continue
 
-        if line != "İndirmek İçin Tıklayınız":
-            ilanlar.append(line)
+        if line == "İndirmek İçin Tıklayınız":
+            continue
+
+        ilanlar.append(line)
 
     return list(set(ilanlar))
 
+
+DEFAULT_SEEN = {
+    "Konya Büyükşehir Belediyesi": [],
+    "Konya Valiliği": [],
+    "KOS": []
+}
 
 try:
     with open("seen.json", "r", encoding="utf-8") as f:
         seen = json.load(f)
 except:
-    seen = {
-        "Konya Büyükşehir Belediyesi": [],
-        "Konya Valiliği": [],
-        "KOS": []
-    }
+    seen = DEFAULT_SEEN
 
 
 SITES = {
@@ -98,16 +134,17 @@ SITES = {
 for site_name, func in SITES.items():
 
     try:
+
         current = func()
 
         old = set(seen.get(site_name, []))
         new = set(current)
 
-        fark = new - old
+        yeni_ilanlar = new - old
 
-        if old:
+        if len(old) > 0:
 
-            for ilan in fark:
+            for ilan in sorted(yeni_ilanlar):
 
                 telegram(
                     f"🔔 Yeni İhale\n\n"
@@ -115,12 +152,20 @@ for site_name, func in SITES.items():
                     f"Kaynak: {site_name}"
                 )
 
-                print("Yeni:", ilan)
+                print(f"YENI IHALE -> {site_name} -> {ilan}")
 
         seen[site_name] = current
 
     except Exception as e:
-        print(site_name, e)
+
+        print(f"HATA ({site_name}): {e}")
 
 with open("seen.json", "w", encoding="utf-8") as f:
-    json.dump(seen, f, ensure_ascii=False, indent=2)
+    json.dump(
+        seen,
+        f,
+        ensure_ascii=False,
+        indent=2
+    )
+
+print("Kontrol tamamlandi")
