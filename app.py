@@ -30,7 +30,6 @@ def konya_belediye():
     )
 
     soup = BeautifulSoup(r.text, "html.parser")
-
     text = soup.get_text(" ", strip=True)
 
     ilanlar = []
@@ -38,9 +37,7 @@ def konya_belediye():
     parts = text.split("İhale Konusu")
 
     for part in parts[1:]:
-
         if "İhale Sahibi" in part:
-
             baslik = part.split("İhale Sahibi")[0].strip()
 
             if len(baslik) > 10:
@@ -64,8 +61,7 @@ def konya_valilik():
 
     ilanlar = []
 
-    for line in soup.get_text("\n", strip=True).split("\n"):
-
+    for line in soup.get_text("\\n", strip=True).split("\\n"):
         line = line.strip()
 
         if len(line) < 10:
@@ -97,8 +93,7 @@ def kos():
 
     ilanlar = []
 
-    for line in soup.get_text("\n", strip=True).split("\n"):
-
+    for line in soup.get_text("\\n", strip=True).split("\\n"):
         line = line.strip()
 
         if len(line) < 10:
@@ -121,9 +116,8 @@ DEFAULT_SEEN = {
 try:
     with open("seen.json", "r", encoding="utf-8") as f:
         seen = json.load(f)
-except:
+except Exception:
     seen = DEFAULT_SEEN
-
 
 SITES = {
     "Konya Büyükşehir Belediyesi": konya_belediye,
@@ -137,18 +131,23 @@ for site_name, func in SITES.items():
 
         current = func()
 
+        print(f"{site_name} -> Toplam ilan: {len(current)}")
+
         old = set(seen.get(site_name, []))
         new = set(current)
 
         yeni_ilanlar = new - old
+
+        print(f"{site_name} -> Seen: {len(old)}")
+        print(f"{site_name} -> Yeni ilan: {len(yeni_ilanlar)}")
 
         if len(old) > 0:
 
             for ilan in sorted(yeni_ilanlar):
 
                 telegram(
-                    f"🔔 Yeni İhale\n\n"
-                    f"{ilan}\n\n"
+                    f"🔔 Yeni İhale\\n\\n"
+                    f"{ilan}\\n\\n"
                     f"Kaynak: {site_name}"
                 )
 
