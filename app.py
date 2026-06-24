@@ -26,7 +26,7 @@ def konya_belediye():
         headers={
             "User-Agent": "Mozilla/5.0"
         },
-        timeout=30
+        timeout=60
     )
 
     soup = BeautifulSoup(r.text, "html.parser")
