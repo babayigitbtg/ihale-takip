@@ -146,8 +146,8 @@ for site_name, func in SITES.items():
             for ilan in sorted(yeni_ilanlar):
 
                 telegram(
-                    f"🔔 Yeni İhale\\n\\n"
-                    f"{ilan}\\n\\n"
+                    f"🔔 Yeni İhale\n\n"
+                    f"{ilan}\n\n"
                     f"Kaynak: {site_name}"
                 )
 
